@@ -129,6 +129,13 @@ html, body {
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
 }
 
+/* 인쇄 전용 요소. 화면에서는 숨기고, @media print에서만 CSS 배경 이미지로 렌더링한다.
+   iOS Safari가 인쇄 시 동적으로 바뀐 <img src>를 제대로 그리지 못하는 경우가 있어
+   더 안정적인 background-image 방식을 인쇄용으로 별도 사용한다. */
+#print-target {
+  display: none;
+}
+
 .button-row {
   display: flex;
   gap: 16px;
@@ -176,13 +183,16 @@ html, body {
   }
 
   #print-image {
+    display: none !important;
+  }
+
+  #print-target {
     display: block;
     width: 4in;
     height: 6in;
-    max-width: none;
-    max-height: none;
-    object-fit: var(--print-object-fit);
-    border-radius: 0;
-    background: #fff;
+    margin: 0;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: var(--print-object-fit);
   }
 }
