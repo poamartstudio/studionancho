@@ -39,11 +39,9 @@
   var printBtn = document.getElementById("print-btn");
   var resetBtn = document.getElementById("reset-btn");
   var printImage = document.getElementById("print-image");
-  var printTarget = document.getElementById("print-target");
 
   var lastIndex = -1;
-  var resetTimer = null;
-  var didReset = false;
+  var currentSrc = null;
 
   function pickRandomImage() {
     if (IMAGES.length === 1) {
@@ -58,38 +56,24 @@
   }
 
   function showHomeScreen() {
-    if (didReset) return;
-    didReset = true;
-
-    if (resetTimer) {
-      clearTimeout(resetTimer);
-      resetTimer = null;
-    }
-
     previewScreen.classList.add("hidden");
     homeScreen.classList.remove("hidden");
     printImage.removeAttribute("src");
-    printTarget.style.backgroundImage = "";
-
-    window.removeEventListener("afterprint", showHomeScreen);
+    currentSrc = null;
   }
 
   // 뽑기: 랜덤 이미지를 골라 미리보기 화면(이미지 + 인쇄/처음으로 버튼)을 보여줌
   function drawImage() {
-    didReset = false;
-
-    var src = pickRandomImage();
+    currentSrc = pickRandomImage();
 
     function onImageReady() {
       printImage.removeEventListener("load", onImageReady);
-      // 인쇄 시에는 #print-image 대신 #print-target의 배경 이미지를 사용한다.
-      printTarget.style.backgroundImage = 'url("' + src + '")';
       homeScreen.classList.add("hidden");
       previewScreen.classList.remove("hidden");
     }
 
     printImage.addEventListener("load", onImageReady);
-    printImage.src = src;
+    printImage.src = currentSrc;
 
     // 이미지가 이미 브라우저 캐시에 있어 즉시 로드가 끝난 경우 load 이벤트가
     // 발생하지 않을 수 있으므로 complete 여부를 직접 확인해 보완한다.
@@ -98,15 +82,11 @@
     }
   }
 
-  // 인쇄: 미리보기 화면에서 사용자가 인쇄 버튼을 눌렀을 때만 AirPrint 시트를 띄움
+  // 인쇄: 폰트/애니메이션 등 복잡한 요소가 섞인 이 페이지에서 바로 window.print()를
+  // 호출하면 브라우저별로 인쇄 렌더링이 꼬이는 경우가 있어, 사진 한 장만 있는
+  // 별도의 print.html로 이동해 그곳에서 인쇄를 실행한다.
   function startPrint() {
-    // iOS Safari에서 afterprint 이벤트가 항상 안정적으로 발생하지 않는 경우를 대비해
-    // 1) afterprint 리스너와 2) 일정 시간 후 자동 초기화 타이머, 3) 화면의 "처음으로" 버튼
-    // 세 가지 안전장치를 함께 둔다.
-    window.addEventListener("afterprint", showHomeScreen);
-    resetTimer = setTimeout(showHomeScreen, 15000);
-
-    window.print();
+    location.href = "print.html?src=" + encodeURIComponent(currentSrc);
   }
 
   drawBtn.addEventListener("click", drawImage);

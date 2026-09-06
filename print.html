@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>인쇄</title>
+<style>
+  /* 인쇄 시 이미지가 용지를 채우는 방식.
+     기본값: cover (여백 없이 꽉 채움, 이미지 일부가 잘릴 수 있음)
+     실제 인쇄 테스트 후 이미지가 과하게 잘린다면 아래 값을 contain으로 바꾸세요. */
+  :root {
+    --print-object-fit: cover; /* cover | contain */
+  }
+
+  @page {
+    size: 4in 6in;
+    margin: 0;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+  }
+
+  #print-image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: var(--print-object-fit);
+  }
+
+  @media print {
+    html, body {
+      width: 4in;
+      height: 6in;
+    }
+
+    #print-image {
+      width: 4in;
+      height: 6in;
+    }
+  }
+</style>
+</head>
+<body>
+  <img id="print-image" alt="">
+  <script>
+    (function () {
+      "use strict";
+
+      var params = new URLSearchParams(location.search);
+      var src = params.get("src");
+      var img = document.getElementById("print-image");
+
+      if (!src) {
+        location.href = "index.html";
+        return;
+      }
+
+      var didGoBack = false;
+      function goBack() {
+        if (didGoBack) return;
+        didGoBack = true;
+        location.href = "index.html";
+      }
+
+      function doPrint() {
+        img.removeEventListener("load", doPrint);
+        window.addEventListener("afterprint", goBack);
+        setTimeout(goBack, 15000);
+        window.print();
+      }
+
+      img.addEventListener("load", doPrint);
+      img.src = src;
+
+      // 이미지가 이미 캐시되어 있어 즉시 로드가 끝난 경우를 대비한 보완 처리.
+      if (img.complete && img.naturalWidth > 0) {
+        doPrint();
+      }
+    })();
+  </script>
+</body>
+</html>
