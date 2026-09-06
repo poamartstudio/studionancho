@@ -123,7 +123,12 @@
 
   drawBtn.addEventListener("click", drawImage);
   printBtn.addEventListener("click", startPrint);
-  resetBtn.addEventListener("click", showHomeScreen);
+  resetBtn.addEventListener("click", function () {
+    // 인쇄(안드로이드 시스템 인쇄 화면)를 거치면 전체화면이 풀리므로,
+    // 사용자의 직접 클릭인 이 버튼에서 즉시 다시 요청한다.
+    requestFullscreenOnce();
+    showHomeScreen();
+  });
 
   // "홈 화면에 추가"가 크롬에서 진짜 전체화면 앱으로 설치되려면 서비스 워커 등록이 필요하다.
   if ("serviceWorker" in navigator) {
