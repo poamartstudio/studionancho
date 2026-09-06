@@ -66,10 +66,19 @@ html, body {
   50% { transform: scale(1.03); }
 }
 
-#draw-btn:hover,
 #draw-btn:active {
   animation-play-state: paused;
   transform: scale(1.08) !important;
+}
+
+/* 실제 마우스가 있는 기기에서만 hover 효과 적용.
+   터치 기기에서 :hover를 무조건 걸어두면 첫 탭은 hover만 적용되고
+   클릭이 씹히는(두 번 눌러야 반응하는) 문제가 생길 수 있다. */
+@media (hover: hover) and (pointer: fine) {
+  #draw-btn:hover {
+    animation-play-state: paused;
+    transform: scale(1.08) !important;
+  }
 }
 
 #home-screen {
