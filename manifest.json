@@ -1,0 +1,16 @@
+{
+  "name": "가만히, 묻다",
+  "short_name": "가만히, 묻다",
+  "start_url": "index.html",
+  "display": "fullscreen",
+  "orientation": "portrait",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "icons": [
+    {
+      "src": "back1.png",
+      "sizes": "1640x1483",
+      "type": "image/png"
+    }
+  ]
+}

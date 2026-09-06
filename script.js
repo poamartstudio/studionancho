@@ -62,8 +62,24 @@
     currentSrc = null;
   }
 
+  // 사용자의 첫 탭(제스처) 응답으로 전체화면을 요청해 주소창을 숨긴다.
+  // 브라우저/기기에 따라 지원하지 않거나 거부될 수 있어 실패해도 무시한다.
+  function requestFullscreenOnce() {
+    var el = document.documentElement;
+    if (document.fullscreenElement) return;
+    var request = el.requestFullscreen || el.webkitRequestFullscreen;
+    if (!request) return;
+    try {
+      var result = request.call(el);
+      if (result && typeof result.catch === "function") {
+        result.catch(function () {});
+      }
+    } catch (e) {}
+  }
+
   // 뽑기: 랜덤 이미지를 골라 미리보기 화면(이미지 + 인쇄/처음으로 버튼)을 보여줌
   function drawImage() {
+    requestFullscreenOnce();
     currentSrc = pickRandomImage();
 
     function onImageReady() {
