@@ -102,6 +102,17 @@
     window.addEventListener("afterprint", showHomeScreen);
     resetTimer = setTimeout(showHomeScreen, 15000);
 
+    // iOS Safari에서 인쇄용 레이아웃(4x6인치)을 다시 그리는 시점에 이미지 디코딩이
+    // 끝나있지 않으면 인쇄 미리보기에 이미지 대신 alt 텍스트만 보이는 경우가 있다.
+    // decode()로 디코딩 완료를 확실히 기다린 뒤 인쇄를 실행해 이를 방지한다.
+    if (printImage.decode) {
+      printImage.decode().then(triggerPrint, triggerPrint);
+    } else {
+      triggerPrint();
+    }
+  }
+
+  function triggerPrint() {
     window.print();
   }
 
