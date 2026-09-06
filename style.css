@@ -148,3 +148,14 @@ html, body {
   color: #fff;
   cursor: pointer;
 }
+
+/* 인쇄용 숨겨진 iframe. display:none을 쓰면 일부 브라우저가 내용을 아예
+   렌더링하지 않아 인쇄가 비어버릴 수 있어, 화면 밖으로 밀어내는 방식으로 숨긴다. */
+#print-frame {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  width: 0;
+  height: 0;
+  border: 0;
+}

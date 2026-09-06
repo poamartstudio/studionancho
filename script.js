@@ -39,9 +39,11 @@
   var printBtn = document.getElementById("print-btn");
   var resetBtn = document.getElementById("reset-btn");
   var printImage = document.getElementById("print-image");
+  var printFrame = document.getElementById("print-frame");
 
   var lastIndex = -1;
   var currentSrc = null;
+  var resetTimer = null;
 
   function pickRandomImage() {
     if (IMAGES.length === 1) {
@@ -56,6 +58,12 @@
   }
 
   function showHomeScreen() {
+    if (resetTimer) {
+      clearTimeout(resetTimer);
+      resetTimer = null;
+    }
+    window.removeEventListener("afterprint", showHomeScreen);
+
     previewScreen.classList.add("hidden");
     homeScreen.classList.remove("hidden");
     printImage.removeAttribute("src");
@@ -99,10 +107,18 @@
   }
 
   // 인쇄: 폰트/애니메이션 등 복잡한 요소가 섞인 이 페이지에서 바로 window.print()를
-  // 호출하면 브라우저별로 인쇄 렌더링이 꼬이는 경우가 있어, 사진 한 장만 있는
-  // 별도의 print.html로 이동해 그곳에서 인쇄를 실행한다.
+  // 호출하면 브라우저별로 인쇄 렌더링이 꼬이는 경우가 있다. 그렇다고 별도 페이지로
+  // 이동(location.href)하면 전체화면 모드가 풀려버리므로, 화면 이동 없이 숨겨진
+  // iframe 안에 사진 한 장만 있는 print.html을 불러와 그 안에서만 인쇄를 실행한다.
   function startPrint() {
-    location.href = "print.html?src=" + encodeURIComponent(currentSrc);
+    window.addEventListener("afterprint", showHomeScreen);
+    resetTimer = setTimeout(showHomeScreen, 15000);
+
+    printFrame.onload = function () {
+      printFrame.contentWindow.focus();
+      printFrame.contentWindow.print();
+    };
+    printFrame.src = "print.html?src=" + encodeURIComponent(currentSrc);
   }
 
   drawBtn.addEventListener("click", drawImage);
