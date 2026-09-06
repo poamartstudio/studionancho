@@ -108,4 +108,9 @@
   drawBtn.addEventListener("click", drawImage);
   printBtn.addEventListener("click", startPrint);
   resetBtn.addEventListener("click", showHomeScreen);
+
+  // "홈 화면에 추가"가 크롬에서 진짜 전체화면 앱으로 설치되려면 서비스 워커 등록이 필요하다.
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("sw.js").catch(function () {});
+  }
 })();
